@@ -15,8 +15,6 @@ spec:
     tty: true
     securityContext:
       privileged: true
-    volumeMounts:
-      - name: varlibcontainers
 '''   
     }
   }
