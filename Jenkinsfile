@@ -1,36 +1,31 @@
 pipeline {
-    agent any
-
-    environment {
-        OLD_VERSION = '1'
-        NEW_VERSION = '2'
-        DOCKER_IMAGE_NAME = "igorvit/diploma:${NEW_VERSION}"
-        DOCKER_CRED_ID = 'docker-cred-id'
+  agent any
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '5'))
+  }
+  environment {
+    DOCKERHUB_CREDENTIALS = credentials('docker-cred-id')
+  }
+  stages {
+    stage('Build') {
+      steps {
+        sh 'docker build -t igorvit/diploma:1.0.2 .'
+      }
     }
-
-    stages {
-        stage('Build and Push Docker Image') {
-            steps {
-                script {
-                    // Сборка Docker-образа
-                    docker.build(DOCKER_IMAGE_NAME, "-f Dockerfile .")
-
-                    // Логин в Docker Hub с использованием учетных данных
-                    docker.withRegistry('https://registry.hub.docker.com', DOCKER_CRED_ID) {
-                        // Пуш Docker-образа в Docker Hub
-                        docker.image(DOCKER_IMAGE_NAME).push()
-                    }
-                }
-            }
-        }
+    stage('Login') {
+      steps {
+        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+      }
     }
-
-    post {
-        success {
-            echo "Pipeline выполнен успешно"
-        }
-        failure {
-            echo "Pipeline завершился с ошибкой"
-        }
+    stage('Push') {
+      steps {
+        sh 'docker push igorvit/diploma:1.0.2'
+      }
     }
+  }
+  post {
+    always {
+      sh 'docker logout'
+    }
+  }
 }
