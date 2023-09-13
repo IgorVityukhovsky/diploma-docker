@@ -4,11 +4,6 @@ pipeline {
       label 'buildah-pod' // Указываем метку вашего существующего пода
     }
   }
-  options {
-    buildDiscarder(logRotator(numToKeepStr: '3'))
-    durabilityHint('PERFORMANCE_OPTIMIZED')
-    disableConcurrentBuilds()
-  }
   stages {
     stage('Build with Buildah') {
       steps {
