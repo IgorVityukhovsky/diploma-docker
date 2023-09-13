@@ -8,9 +8,7 @@ pipeline {
   }
   stages {
     stage('Build') {
-      steps {
-        sh 'docker build -t igorvit/diploma:1.0.2 .'
-      }
+      dockerImage = docker.build("igorvit/diploma:1.0.2")
     }
     stage('Login') {
       steps {
