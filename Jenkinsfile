@@ -1,6 +1,7 @@
 pipeline {
   agent {
-    kubernetes { 
+    kubernetes {
+      label 'buildah-pod' // Указываем метку вашего существующего пода
     }
   }
   options {
