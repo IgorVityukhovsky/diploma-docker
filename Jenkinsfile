@@ -1,22 +1,6 @@
 pipeline {
   agent {
-    kubernetes {
-      yaml '''
-apiVersion: v1
-kind: Pod
-metadata:
-  name: buildah
-  namespace: devops-tools
-spec:
-  containers:
-  - name: buildah
-    image: quay.io/buildah/stable:v1.23.1
-    command:
-    - cat
-    tty: true
-    securityContext:
-      privileged: true
-'''   
+    kubernetes { 
     }
   }
   options {
