@@ -6,6 +6,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: buildah
+  namespace: devops-tools
 spec:
   containers:
   - name: buildah
