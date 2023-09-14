@@ -30,7 +30,7 @@ spec:
             script: "git ls-remote --tags $GIT_REPO | grep -o 'refs/tags/[^/]*\$' | sort -V | tail -n 1 | cut -d '/' -f 3",
             returnStatus: true)
   }
-//  stages {
+  stages {
 //    stage('Get Latest Git Tag') {
 //      steps {
 //        script {
