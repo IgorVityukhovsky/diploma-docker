@@ -29,7 +29,7 @@ spec:
     TAG_VERSION = sh (
             script: "git ls-remote --tags $GIT_REPO | grep -o 'refs/tags/[^/]*\$' | sort -V | tail -n 1 | cut -d '/' -f 3",
             returnStdout: true)
-    TAG = ${TAG_VERSION}+:+${BUILD_NUMBER}
+    def TAG = ${TAG_VERSION}:${BUILD_NUMBER}
   }
   stages {
     stage('Build with Buildah') {
