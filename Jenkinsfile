@@ -63,9 +63,7 @@ spec:
       }
     }
     stage('Deploy') {
-      agent {
-        label 'jenkins-server'
-      }
+      agent any
       steps {
           sh "kubectl apply -f https://github.com/IgorVityukhovsky/diploma-docker/blob/main/my-app-deploy-update.yml"
         }
