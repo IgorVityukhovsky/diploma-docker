@@ -1,11 +1,4 @@
 pipeline {
-  environment {
-    DH_CREDS=credentials('docker-cred-id')
-    GIT_REPO = 'https://github.com/IgorVityukhovsky/diploma-docker'
-    TAG_VERSION = sh (
-            script: "git ls-remote --tags $GIT_REPO | grep -o 'refs/tags/[^/]*\$' | sort -V | tail -n 1 | cut -d '/' -f 3",
-            returnStdout: true,)
-  }
   agent {
     kubernetes {
       yaml '''
@@ -30,20 +23,20 @@ spec:
     durabilityHint('PERFORMANCE_OPTIMIZED')
     disableConcurrentBuilds()
   }
-//  environment {
-//    DH_CREDS=credentials('docker-cred-id')
-//    GIT_REPO = 'https://github.com/IgorVityukhovsky/diploma-docker'
-//    TAG_VERSION = sh (
-//            script: "git ls-remote --tags $GIT_REPO | grep -o 'refs/tags/[^/]*\$' | sort -V | tail -n 1 | cut -d '/' -f 3",
-//            returnStatus: true)
-//  }
+  environment {
+    DH_CREDS=credentials('docker-cred-id')
+    GIT_REPO = 'https://github.com/IgorVityukhovsky/diploma-docker'
+    TAG_VERSION = sh (
+            script: "git ls-remote --tags $GIT_REPO | grep -o 'refs/tags/[^/]*\$' | sort -V | tail -n 1 | cut -d '/' -f 3",
+            returnStdout: true)
+  }
   stages {
     stage('Build with Buildah') {
       steps {
         container('buildah') {
           sh "echo ${TAG_VERSION}"
           sh "echo ${BUILD_NUMBER}"
-          sh "buildah build -t igorvit/dimploma:${TAG_VERSION}:${BUILD_NUMBER} ."
+          sh "buildah build -t igorvit/dimploma:${TAG_VERSION}:\${BUILD_NUMBER} ."
         }
       }
     }
