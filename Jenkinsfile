@@ -37,7 +37,7 @@ spec:
         container('buildah') {
           sh "echo ${TAG_VERSION}"
           sh "echo ${BUILD_NUMBER}"
-          sh "buildah build -t igorvit/dimploma:${TAG} ."
+          sh "buildah build -t igorvit/diploma:${TAG} ."
         }
       }
     }
@@ -51,14 +51,14 @@ spec:
     stage('Tag Image') {
       steps {
         container('buildah') {
-          sh "buildah tag igorvit/dimploma:${TAG} igorvit/dimploma:latest"
+          sh "buildah tag igorvit/diploma:${TAG} igorvit/dimploma:latest"
         }
       }
     }
     stage('Push Image') {
       steps {
         container('buildah') {
-          sh "buildah push igorvit/dimploma:${TAG}"
+          sh "buildah push igorvit/diploma:${TAG}"
         }
       }
     }
