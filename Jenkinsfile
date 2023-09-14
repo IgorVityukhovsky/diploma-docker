@@ -63,11 +63,12 @@ spec:
       }
     }
     stage('Deploy') {
+      agent {
+        label 'app: jenkins-server'
+      }
       steps {
-        container('jenkins') {
           sh "kubectl apply -f https://github.com/IgorVityukhovsky/diploma-docker/blob/main/my-app-deploy-update.yml"
         }
-      }
     }
   }
   post {
@@ -78,3 +79,4 @@ spec:
     }
   }
 }
+
