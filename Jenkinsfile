@@ -62,43 +62,75 @@ spec:
         }
       }
     }
-    stage('Deploy') {
+stage('Deploy') {
       agent any
       steps {
         script {
-          sh '''
-kubectl apply --filename=- <<EOF
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: my-app-deployment
-  namespaces: default
-spec:
-  replicas: 2
-  revisionHistoryLimit: 5
-  strategy:
-    rollingUpdate:
-      maxSurge: 100%
-      maxUnavailable: 50%
-  selector:
-    matchLabels:
-      app: my-app
-  template:
-    metadata:
-      labels:
-        app: my-app
-    spec:
-      containers:
-        - name: my-container
-          image: igorvit/diploma:${TAG}
-          ports:
-            - containerPort: 8099
-EOF
-'''
+          def dockerHubRepository = "igorvit/diploma:${TAG}"
+          def maxRetries = 30
+          def retryInterval = 10 // Интервал между попытками в секундах
+
+          // Функция для проверки доступности образа на Docker Hub
+          def isImageAvailable() {
+            def result = sh(script: "docker pull ${dockerHubRepository}", returnStatus: true)
+            return result == 0
+          }
+
+          def retries = 0
+          boolean imageAvailable = false
+
+          // Проверяем доступность образа с максимальным числом попыток
+          while (!imageAvailable && retries < maxRetries) {
+            retries++
+            echo "Попытка ${retries} проверки доступности образа на Docker Hub..."
+
+            if (isImageAvailable()) {
+              imageAvailable = true
+              echo "Образ ${dockerHubRepository} доступен на Docker Hub."
+            } else {
+              sleep retryInterval
+            }
+          }
+
+          if (imageAvailable) {
+            // Выполняем деплой, так как образ доступен
+            sh '''
+              kubectl apply --filename=- <<EOF
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: my-app-deployment
+                namespaces: default
+              spec:
+                replicas: 2
+                revisionHistoryLimit: 5
+                strategy:
+                  rollingUpdate:
+                    maxSurge: 100%
+                    maxUnavailable: 50%
+                selector:
+                  matchLabels:
+                    app: my-app
+                template:
+                  metadata:
+                    labels:
+                      app: my-app
+                  spec:
+                    containers:
+                      - name: my-container
+                        image: igorvit/diploma:${TAG}
+                        ports:
+                          - containerPort: 8099
+              EOF
+            '''
+          } else {
+            error "Образ ${dockerHubRepository} не стал доступен на Docker Hub после ${maxRetries} попыток."
+          }
         }
       }
     }
   }
+
   post {
     always {
       container('buildah') {
