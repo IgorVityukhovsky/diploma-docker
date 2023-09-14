@@ -72,6 +72,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: my-app-deployment
+  namespaces: default
 spec:
   replicas: 2
   revisionHistoryLimit: 5
