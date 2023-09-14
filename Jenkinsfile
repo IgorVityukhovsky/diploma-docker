@@ -62,13 +62,41 @@ spec:
         }
       }
     }
-    stage('Deploy') {
-      agent any
-      steps {
-          sh "kubectl apply -f https://github.com/IgorVityukhovsky/diploma-docker/blob/main/my-app-deploy-update.yml"
-        }
+stage('Deploy') {
+  agent any
+  steps {
+    script {
+      sh '''
+kubectl apply --filename=- <<EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-deployment
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  strategy:
+    rollingUpdate:
+      maxSurge: 100%
+      maxUnavailable: 50%
+selector:
+  matchLabels:
+    app: my-app
+template:
+  metadata:
+    labels:
+      app: my-app
+  spec:
+    containers:
+      - name: my-container
+        image: igorvit/diploma:${TAG}
+        ports:
+          - containerPort: 8099
+EOF
+'''
     }
   }
+}
   post {
     always {
       container('buildah') {
