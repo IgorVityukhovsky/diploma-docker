@@ -40,7 +40,7 @@ spec:
     stage('Build with Buildah') {
       steps {
         container('buildah') {
-          sh "buildah build -t igorvit/dimploma:1.0.5 ."
+          sh "buildah build -t igorvit/dimploma:${TAG_VERSION}:${BUILD_NUMBER} ."
         }
       }
     }
