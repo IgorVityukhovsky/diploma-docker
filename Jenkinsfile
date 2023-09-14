@@ -76,7 +76,7 @@ while true; do
         echo "Образ $IMAGE пока не доступен. Повторная попытка через 3 секунд..."
         sleep 3
     fi
-
+done  && \
 kubectl apply --filename=- <<EOF
 apiVersion: apps/v1
 kind: Deployment
