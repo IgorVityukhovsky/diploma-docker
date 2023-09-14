@@ -68,7 +68,7 @@ spec:
         script {
           sh '''
 while true; do
-    docker pull igorvit/diploma:${TAG} 2>/dev/null
+    buildah pull igorvit/diploma:${TAG} 2>/dev/null
     if [ $? -eq 0 ]; then
         echo "Образ $IMAGE доступен на Docker Hub."
         break
