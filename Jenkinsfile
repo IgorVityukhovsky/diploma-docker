@@ -5,6 +5,7 @@ pipeline {
     TAG_VERSION = sh (
             script: "git ls-remote --tags $GIT_REPO | grep -o 'refs/tags/[^/]*\$' | sort -V | tail -n 1 | cut -d '/' -f 3",
             returnStatus: true)
+    TAG = TAG_VERSION
   }
   agent {
     kubernetes {
@@ -41,7 +42,9 @@ spec:
     stage('Build with Buildah') {
       steps {
         container('buildah') {
-          sh "echo ${TAG_VERSION}"
+          sh "echo ${TAG}"
+          sh "echo $TAG"
+          sh "echo $TAG_VERSION"
           sh "echo ${BUILD_NUMBER}"
           sh "buildah build -t igorvit/dimploma:${TAG_VERSION}:${BUILD_NUMBER} ."
         }
