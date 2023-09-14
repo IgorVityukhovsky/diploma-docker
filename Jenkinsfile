@@ -44,7 +44,7 @@ spec:
     stage('tag image') {
   steps {
     container('buildah') {
-      sh 'buildah tag igorvit/dimploma:1.0.4'
+      sh 'buildah tag igorvit/dimploma:1.0.4 igorvit/dimploma:latest'
         }
       }
     }
