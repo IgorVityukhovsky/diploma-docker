@@ -32,7 +32,7 @@ spec:
       steps {
         script {
           TAG_VERSION = sh (
-            script: "git ls-remote --tags $GIT_REPO | grep -o 'refs/tags/[^/]*$' | sort -V | tail -n 1 | cut -d '/' -f 3",
+            script: "git ls-remote --tags \$GIT_REPO | grep -o 'refs/tags/[^/]*$' | sort -V | tail -n 1 | cut -d '/' -f 3",
             returnStatus: true).trim()
         }
       }
