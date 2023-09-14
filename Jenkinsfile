@@ -43,7 +43,7 @@ spec:
     stage('Build with Buildah') {
       steps {
         container('buildah') {
-          env.TAG_VERSION = TAG_VERSION
+          env.TAG_VERSION = ${TAG_VERSION}
           sh "echo ${TAG_VERSION}"
           sh "echo ${BUILD_NUMBER}"
           sh "buildah build -t igorvit/dimploma:${TAG_VERSION}:${BUILD_NUMBER} ."
