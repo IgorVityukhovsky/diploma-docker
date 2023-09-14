@@ -44,7 +44,7 @@ spec:
     stage('push image') {
       steps {
         container('buildah') {
-          sh 'buildah push igorvit/dimploma:1.0.2'
+          sh 'buildah push igorvit/dimploma:1.0.3'
         }
       }
     }
