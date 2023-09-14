@@ -29,7 +29,7 @@ spec:
     TAG_VERSION = sh (
             script: "git ls-remote --tags $GIT_REPO | grep -o 'refs/tags/[^/]*\$' | sort -V | tail -n 1 | cut -d '/' -f 3",
             returnStdout: true).trim()
-    TAG = "${TAG_VERSION}-${BUILD_NUMBER}"
+    TAG = "${TAG_VERSION}.${BUILD_NUMBER}"
   }
   stages {
     stage('Build with Buildah') {
@@ -51,14 +51,14 @@ spec:
     stage('Tag Image') {
       steps {
         container('buildah') {
-          sh "buildah tag igorvit/dimploma:${TAG_VERSION}:${BUILD_NUMBER} igorvit/dimploma:latest"
+          sh "buildah tag igorvit/dimploma:${TAG} igorvit/dimploma:latest"
         }
       }
     }
     stage('Push Image') {
       steps {
         container('buildah') {
-          sh "buildah push igorvit/dimploma:${TAG_VERSION}:${BUILD_NUMBER}"
+          sh "buildah push igorvit/dimploma:${TAG}"
         }
       }
     }
