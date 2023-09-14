@@ -19,16 +19,40 @@ spec:
     }
   }
   options {
-    buildDiscarder(logRotator(numToKeepStr: '3'))
+    buildDiscarder(logRotator(numToKeepStr: '2'))
     durabilityHint('PERFORMANCE_OPTIMIZED')
     disableConcurrentBuilds()
+  }
+  environment {
+    DH_CREDS=credentials('docker-cred-id')
   }
   stages {
     stage('Build with Buildah') {
       steps {
         container('buildah') {
-          sh 'buildah build -t darinpope/jenkins-example-buildah:8.5-230 .'
+          sh 'buildah build -t igorvit/dimploma:1.0.2 .'
         }
+      }
+    }
+    stage('Login to Docker Hub') {
+      steps {
+        container('buildah') {
+          sh 'echo $DH_CREDS_PSW | buildah login -u $DH_CREDS_USR --password-stdin docker.io'
+        }
+      }
+    }
+    stage('push image') {
+      steps {
+        container('buildah') {
+          sh 'buildah push igorvit/dimploma:1.0.2'
+        }
+      }
+    }
+  }
+  post {
+    always {
+      container('buildah') {
+        sh 'buildah logout docker.io'
       }
     }
   }
