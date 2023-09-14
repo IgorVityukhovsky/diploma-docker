@@ -25,33 +25,46 @@ spec:
   }
   environment {
     DH_CREDS=credentials('docker-cred-id')
+    GIT_REPO = 'https://github.com/IgorVityukhovsky/diploma-docker'
   }
   stages {
+    stage('Get Latest Git Tag') {
+      steps {
+        script {
+          TAG_VERSION = sh(script: '''
+            git ls-remote --tags ${env.GIT_REPO} | grep -o 'refs/tags/[^/]*$' | sort -V | tail -n 1 | cut -d '/' -f 3
+          ''', returnStatus: true).trim()
+          if (TAG_VERSION == '') {
+            error 'Failed to get latest Git tag.'
+          }
+        }
+      }
+    }
     stage('Build with Buildah') {
       steps {
         container('buildah') {
-          sh 'buildah build -t igorvit/dimploma:1.0.4 .'
+          sh "buildah build -t igorvit/dimploma:${TAG_VERSION}:${BUILD_NUMBER} ."
         }
       }
     }
     stage('Login to Docker Hub') {
       steps {
         container('buildah') {
-          sh 'echo $DH_CREDS_PSW | buildah login -u $DH_CREDS_USR --password-stdin docker.io'
+          sh "echo $DH_CREDS_PSW | buildah login -u $DH_CREDS_USR --password-stdin docker.io"
         }
       }
     }
-    stage('tag image') {
-  steps {
-    container('buildah') {
-      sh 'buildah tag igorvit/dimploma:1.0.4 igorvit/dimploma:latest'
-        }
-      }
-    }
-    stage('push image') {
+    stage('Tag Image') {
       steps {
         container('buildah') {
-          sh 'buildah push igorvit/dimploma:1.0.4'
+          sh "buildah tag igorvit/dimploma:${TAG_VERSION}:${BUILD_NUMBER} igorvit/dimploma:latest"
+        }
+      }
+    }
+    stage('Push Image') {
+      steps {
+        container('buildah') {
+          sh "buildah push igorvit/dimploma:${TAG_VERSION}:${BUILD_NUMBER}"
         }
       }
     }
