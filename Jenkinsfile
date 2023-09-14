@@ -62,21 +62,31 @@ spec:
         }
       }
     }
+    stage('Checking the availability') {
+      steps {
+        container('buildah') {
+          script {
+            sh '''
+            while true; do
+              buildah pull docker.io/igorvit/diploma:${TAG} 2>/dev/null
+              if [ $? -eq 0 ]; then
+                echo "Образ $IMAGE доступен на Docker Hub."
+                break
+              else
+                echo "Образ $IMAGE пока не доступен. Повторная попытка через 3 секунд..."
+                sleep 3
+              fi
+            done
+            ''' 
+          }
+        }
+      }
+    }
     stage('Deploy') {
       agent any
       steps {
         script {
           sh '''
-while true; do
-    buildah pull docker.io/igorvit/diploma:${TAG} 2>/dev/null
-    if [ $? -eq 0 ]; then
-        echo "Образ $IMAGE доступен на Docker Hub."
-        break
-    else
-        echo "Образ $IMAGE пока не доступен. Повторная попытка через 3 секунд..."
-        sleep 3
-    fi
-done  && \
 kubectl apply --filename=- <<EOF
 apiVersion: apps/v1
 kind: Deployment
