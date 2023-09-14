@@ -30,7 +30,7 @@ spec:
     stage('Build with Buildah') {
       steps {
         container('buildah') {
-          sh 'buildah build -t igorvit/dimploma:1.0.3 .'
+          sh 'buildah build -t igorvit/dimploma:1.0.4 .'
         }
       }
     }
@@ -40,11 +40,18 @@ spec:
           sh 'echo $DH_CREDS_PSW | buildah login -u $DH_CREDS_USR --password-stdin docker.io'
         }
       }
-  }
+    }
+    stage('tag image') {
+  steps {
+    container('buildah') {
+      sh 'buildah tag igorvit/dimploma:1.0.4'
+        }
+      }
+    }
     stage('push image') {
       steps {
         container('buildah') {
-          sh 'buildah push igorvit/dimploma:1.0.3'
+          sh 'buildah push igorvit/dimploma:1.0.4'
         }
       }
     }
