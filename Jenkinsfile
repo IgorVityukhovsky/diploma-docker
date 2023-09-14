@@ -97,6 +97,7 @@ EOF
         }
       }
     }
+  }
   post {
     always {
       container('buildah') {
@@ -104,5 +105,4 @@ EOF
       }
     }
   }
-}
 }
