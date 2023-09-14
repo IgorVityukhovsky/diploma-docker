@@ -62,11 +62,11 @@ spec:
         }
       }
     }
-stage('Deploy') {
-  agent any
-  steps {
-    script {
-      sh '''
+    stage('Deploy') {
+      agent any
+      steps {
+        script {
+          sh '''
 kubectl apply --filename=- <<EOF
 apiVersion: apps/v1
 kind: Deployment
@@ -105,4 +105,3 @@ EOF
     }
   }
 }
-
