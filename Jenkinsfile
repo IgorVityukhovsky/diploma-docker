@@ -30,40 +30,40 @@ spec:
             git ls-remote --tags $GIT_REPO | grep -o 'refs/tags/[^/]*$' | sort -V | tail -n 1 | cut -d '/' -f 3
           ''', returnStatus: true).trim()
   }
-    stage('Build with Buildah') {
-      steps {
-        container('buildah') {
-          sh "buildah build -t igorvit/dimploma:${TAG_VERSION}:${BUILD_NUMBER} ."
-        }
-      }
-    }
-    stage('Login to Docker Hub') {
-      steps {
-        container('buildah') {
-          sh "echo $DH_CREDS_PSW | buildah login -u $DH_CREDS_USR --password-stdin docker.io"
-        }
-      }
-    }
-    stage('Tag Image') {
-      steps {
-        container('buildah') {
-          sh "buildah tag igorvit/dimploma:${TAG_VERSION}:${BUILD_NUMBER} igorvit/dimploma:latest"
-        }
-      }
-    }
-    stage('Push Image') {
-      steps {
-        container('buildah') {
-          sh "buildah push igorvit/dimploma:${TAG_VERSION}:${BUILD_NUMBER}"
-        }
-      }
-    }
-  }
-  post {
-    always {
+  stage('Build with Buildah') {
+    steps {
       container('buildah') {
-        sh 'buildah logout docker.io'
+        sh "buildah build -t igorvit/dimploma:${TAG_VERSION}:${BUILD_NUMBER} ."
       }
     }
   }
+  stage('Login to Docker Hub') {
+    steps {
+      container('buildah') {
+        sh "echo $DH_CREDS_PSW | buildah login -u $DH_CREDS_USR --password-stdin docker.io"
+      }
+    }
+  }
+  stage('Tag Image') {
+    steps {
+      container('buildah') {
+        sh "buildah tag igorvit/dimploma:${TAG_VERSION}:${BUILD_NUMBER} igorvit/dimploma:latest"
+      }
+    }
+  }
+  stage('Push Image') {
+    steps {
+      container('buildah') {
+        sh "buildah push igorvit/dimploma:${TAG_VERSION}:${BUILD_NUMBER}"
+      }
+    }
+  }
+}
+post {
+  always {
+    container('buildah') {
+      sh 'buildah logout docker.io'
+    }
+  }
+}
 
