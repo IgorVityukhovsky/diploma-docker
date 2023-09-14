@@ -94,9 +94,9 @@ template:
           - containerPort: 8099
 EOF
 '''
+        }
+      }
     }
-  }
-}
   post {
     always {
       container('buildah') {
@@ -104,4 +104,5 @@ EOF
       }
     }
   }
+}
 }
