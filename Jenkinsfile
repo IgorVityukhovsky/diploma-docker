@@ -67,12 +67,21 @@ spec:
       steps {
         script {
           sh '''
+while true; do
+    docker pull igorvit/diploma:${TAG} 2>/dev/null
+    if [ $? -eq 0 ]; then
+        echo "Образ $IMAGE доступен на Docker Hub."
+        break
+    else
+        echo "Образ $IMAGE пока не доступен. Повторная попытка через 3 секунд..."
+        sleep 3
+    fi
+done
 kubectl apply --filename=- <<EOF
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: my-app-deployment
-  namespaces: default
 spec:
   replicas: 2
   revisionHistoryLimit: 5
@@ -80,19 +89,19 @@ spec:
     rollingUpdate:
       maxSurge: 100%
       maxUnavailable: 50%
-  selector:
-    matchLabels:
+selector:
+  matchLabels:
+    app: my-app
+template:
+  metadata:
+    labels:
       app: my-app
-  template:
-    metadata:
-      labels:
-        app: my-app
-    spec:
-      containers:
-        - name: my-container
-          image: igorvit/diploma:${TAG}
-          ports:
-            - containerPort: 8099
+  spec:
+    containers:
+      - name: my-container
+        image: igorvit/diploma:${TAG}
+        ports:
+          - containerPort: 8099
 EOF
 '''
         }
