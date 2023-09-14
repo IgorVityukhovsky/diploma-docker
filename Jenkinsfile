@@ -79,19 +79,19 @@ spec:
     rollingUpdate:
       maxSurge: 100%
       maxUnavailable: 50%
-selector:
-  matchLabels:
-    app: my-app
-template:
-  metadata:
-    labels:
+  selector:
+    matchLabels:
       app: my-app
-  spec:
-    containers:
-      - name: my-container
-        image: igorvit/diploma:${TAG}
-        ports:
-          - containerPort: 8099
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - name: my-container
+          image: igorvit/diploma:${TAG}
+          ports:
+            - containerPort: 8099
 EOF
 '''
         }
